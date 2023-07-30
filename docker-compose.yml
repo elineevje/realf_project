@@ -1,16 +1,25 @@
 version: '3'
 services:
   db:
+    container_name: db
     build: ./db
+    ports:
+      - 5432:5432
     volumes:
       - db_data:/var/lib/postgresql/data
+    environment:
+            - POSTGRES_DB=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
 
   backend:
+    container_name: backend
     build: ./backend
     volumes:
       - ./backend:/usr/src/app
 
   frontend:
+    container_name: frontend
     build: ./frontend
     volumes:
       - ./frontend:/usr/src/app

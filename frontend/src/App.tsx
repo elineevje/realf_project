@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Provider } from "react-redux";
 import "./App.css";
 import Login from "./pages/Login";
 import Nav from "./components/Nav";
@@ -23,17 +24,22 @@ function App() {
   });
 
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Nav name={name} setName={setName} />
+    <Provider store={store}>
+      <BrowserRouter>
+        <div className="App">
+          <Nav name={name} setName={setName} />
 
-        <main className="form-signin">
-          <Route path="/" exact component={() => <Home name={name} />} />
-          <Route path="/login" component={() => <Login setName={setName} />} />
-          <Route path="/register" component={Register} />
-        </main>
-      </div>
-    </BrowserRouter>
+          <main className="form-signin">
+            <Route path="/" exact component={() => <Home name={name} />} />
+            <Route
+              path="/login"
+              component={() => <Login setName={setName} />}
+            />
+            <Route path="/register" component={Register} />
+          </main>
+        </div>
+      </BrowserRouter>
+    </Provider>
   );
 }
 
