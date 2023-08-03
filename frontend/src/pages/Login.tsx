@@ -1,20 +1,30 @@
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { AppDispatch, RootState } from "../store";
+import { loginUser } from "../features/auth/authSlice";
 
 const Login = (props: { setName: (name: string) => void }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
 
-  const dispatch = useDispatch();
-  const history = useHistory();
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setRedirect(true);
+    }
+  }, [isAuthenticated]);
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    dispatch(loginUser({ email, password }));
 
-    const response = await fetch("http://localhost:8000/api/login", {
+    /*const response = await fetch("http://localhost:8000/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -22,13 +32,11 @@ const Login = (props: { setName: (name: string) => void }) => {
         email,
         password,
       }),
-    });
+    });*/
 
-    const content = await response.json();
+    //const content = await response.json();
 
-    dispatch({ type: "SET_NAME", payload: content.name });
-
-    setRedirect(true);
+    //props.setName(content.name);
   };
 
   if (redirect) {
@@ -37,7 +45,7 @@ const Login = (props: { setName: (name: string) => void }) => {
 
   return (
     <form onSubmit={submit}>
-      <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
+      <h1 className="h3 mb-3 fw-normal">Please log in</h1>
       <input
         type="email"
         className="form-control"

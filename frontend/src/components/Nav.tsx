@@ -1,9 +1,34 @@
-import React from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { AppDispatch, persistor } from "../store";
+import { SyntheticEvent } from "react";
+import { logoutUser } from "../features/auth/authSlice";
 
 const Nav = (props: { name: string; setName: (name: string) => void }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const logout = async () => {
+    await dispatch(logoutUser());
+    props.setName("");
+    persistor.purge();
+  };
+
+  /*const logout = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    try {
+      dispatch(logoutUser());
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+  /*try {
+      
+      props.setName("");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }*/
+
+  /*const logout = async () => {
     await fetch("http://localhost:8000/api/logout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -11,7 +36,7 @@ const Nav = (props: { name: string; setName: (name: string) => void }) => {
     });
 
     props.setName("");
-  };
+  };*/
 
   let menu;
 
@@ -54,5 +79,4 @@ const Nav = (props: { name: string; setName: (name: string) => void }) => {
     </nav>
   );
 };
-
 export default Nav;

@@ -1,51 +1,77 @@
-import React, {SyntheticEvent, useState} from 'react';
-import {Redirect} from 'react-router-dom';
+import React, { SyntheticEvent, useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
+import { AppDispatch, RootState } from "../store";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../features/auth/authSlice";
 
 const Register = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [redirect, setRedirect] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [redirect, setRedirect] = useState(false);
 
-    const submit = async (e: SyntheticEvent) => {
-        e.preventDefault();
+  const status = useSelector((state: RootState) => state.auth.status);
+  const dispatch = useDispatch<AppDispatch>();
 
-        await fetch('http://localhost:8000/api/register', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                name,
-                email,
-                password
-            })
-        });
-
-        setRedirect(true);
+  useEffect(() => {
+    if (status === "succeeded") {
+      setRedirect(true);
     }
+  }, [status]);
 
-    if (redirect) {
-        return <Redirect to="/login"/>;
-    }
+  const submit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(registerUser({ name, email, password }));
 
-    return (
-        <form onSubmit={submit}>
-            <h1 className="h3 mb-3 fw-normal">Please register</h1>
+    /*await fetch("http://localhost:8000/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+      }),
+    });
 
-            <input className="form-control" placeholder="Name" required
-                   onChange={e => setName(e.target.value)}
-            />
+    setRedirect(true);*/
+  };
 
-            <input type="email" className="form-control" placeholder="Email address" required
-                   onChange={e => setEmail(e.target.value)}
-            />
+  if (redirect) {
+    return <Redirect to="/login" />;
+  }
 
-            <input type="password" className="form-control" placeholder="Password" required
-                   onChange={e => setPassword(e.target.value)}
-            />
+  return (
+    <form onSubmit={submit}>
+      <h1 className="h3 mb-3 fw-normal">Please register</h1>
 
-            <button className="w-100 btn btn-lg btn-primary" type="submit">Submit</button>
-        </form>
-    );
+      <input
+        className="form-control"
+        placeholder="Name"
+        required
+        onChange={(e) => setName(e.target.value)}
+      />
+
+      <input
+        type="email"
+        className="form-control"
+        placeholder="Email address"
+        required
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <input
+        type="password"
+        className="form-control"
+        placeholder="Password"
+        required
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      <button className="w-100 btn btn-lg btn-primary" type="submit">
+        Submit
+      </button>
+    </form>
+  );
 };
 
 export default Register;

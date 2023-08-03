@@ -38,10 +38,12 @@ class LoginView(APIView):
                            algorithm='HS256')
 
         response = Response()
+        serializer = UserSerializer(user)
 
         response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {
-            'jwt': token
+            'jwt': token,
+            'user': serializer.data
         }
         return response
 
@@ -70,6 +72,6 @@ class LogoutView(APIView):
         response = Response()
         response.delete_cookie('jwt')
         response.data = {
-            'message': 'success'
+            'message': 'succeeded'
         }
         return response
