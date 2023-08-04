@@ -1,44 +1,23 @@
 import React, { SyntheticEvent, useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "../features/auth/authSlice";
+import { loginUser, registerUser } from "../features/auth/authSlice";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [redirect, setRedirect] = useState(false);
 
-  const status = useSelector((state: RootState) => state.auth.status);
   const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    if (status === "succeeded") {
-      setRedirect(true);
-    }
-  }, [status]);
+  const history = useHistory();
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(registerUser({ name, email, password }));
-
-    /*await fetch("http://localhost:8000/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
-    });
-
-    setRedirect(true);*/
+    await dispatch(registerUser({ name, email, password }));
+    await dispatch(loginUser({ email, password }));
+    history.push("/");
   };
-
-  if (redirect) {
-    return <Redirect to="/login" />;
-  }
 
   return (
     <form onSubmit={submit}>

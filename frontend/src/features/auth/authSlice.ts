@@ -17,7 +17,7 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (credent
     return response.data;
   });
 
-  export const logoutUser = createAsyncThunk<void, void>(
+  export const userLogout = createAsyncThunk<void, void>(
     'auth/logoutUser',
     async (_, thunkAPI) => {
       await axios.post('http://localhost:8000/api/logout', null, {
@@ -26,14 +26,13 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (credent
     }
   );
 
-
-
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
       user: null,
       isAuthenticated: false,
       status: 'idle',
+      redirect: 0,
     },
     reducers: {
       logoutUser: (state) => {
@@ -66,12 +65,12 @@ const authSlice = createSlice({
             state.status = 'failed';
         })
         builder
-        .addCase(logoutUser.fulfilled, (state) => {
+        .addCase(userLogout.fulfilled, (state) => {
             state.status = 'succeeded';
             state.user = null;
             state.isAuthenticated = false;
         })
-        .addCase(logoutUser.rejected, (state) => {
+        .addCase(userLogout.rejected, (state) => {
             state.status = 'failed';
         });
     },

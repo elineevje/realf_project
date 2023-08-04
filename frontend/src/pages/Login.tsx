@@ -3,45 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { loginUser } from "../features/auth/authSlice";
+import { useHistory } from "react-router-dom";
 
 const Login = (props: { setName: (name: string) => void }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const history = useHistory();
 
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
   const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      setRedirect(true);
-    }
-  }, [isAuthenticated]);
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     dispatch(loginUser({ email, password }));
-
-    /*const response = await fetch("http://localhost:8000/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });*/
-
-    //const content = await response.json();
-
-    //props.setName(content.name);
+    history.push("/");
   };
-
-  if (redirect) {
-    return <Redirect to="/" />;
-  }
 
   return (
     <form onSubmit={submit}>

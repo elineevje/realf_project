@@ -1,46 +1,33 @@
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { AppDispatch, persistor } from "../store";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
+import { AppDispatch, RootState, persistor } from "../store";
 import { SyntheticEvent } from "react";
-import { logoutUser } from "../features/auth/authSlice";
+import { userLogout } from "../features/auth/authSlice";
 
 const Nav = (props: { name: string; setName: (name: string) => void }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const history = useHistory();
+
+  const user: any = useSelector((state: RootState) => state.auth.user);
 
   const logout = async () => {
-    await dispatch(logoutUser());
-    props.setName("");
-    persistor.purge();
+    dispatch(userLogout());
+    history.push("/login");
   };
-
-  /*const logout = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    try {
-      dispatch(logoutUser());
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-  /*try {
-      
-      props.setName("");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }*/
-
-  /*const logout = async () => {
-    await fetch("http://localhost:8000/api/logout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-
-    props.setName("");
-  };*/
 
   let menu;
 
-  if (props.name === "") {
+  if (user && user.name) {
+    menu = (
+      <ul className="navbar-nav me-auto mb-2 mb-md-0">
+        <li className="nav-item active">
+          <Link to="/login" className="nav-link" onClick={logout}>
+            Logout
+          </Link>
+        </li>
+      </ul>
+    );
+  } else {
     menu = (
       <ul className="navbar-nav me-auto mb-2 mb-md-0">
         <li className="nav-item active">
@@ -51,16 +38,6 @@ const Nav = (props: { name: string; setName: (name: string) => void }) => {
         <li className="nav-item active">
           <Link to="/register" className="nav-link">
             Register
-          </Link>
-        </li>
-      </ul>
-    );
-  } else {
-    menu = (
-      <ul className="navbar-nav me-auto mb-2 mb-md-0">
-        <li className="nav-item active">
-          <Link to="/login" className="nav-link" onClick={logout}>
-            Logout
           </Link>
         </li>
       </ul>
