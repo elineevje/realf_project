@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { error } from 'console';
 
 export type User = {
     id: number,
@@ -32,7 +33,6 @@ const authSlice = createSlice({
       user: null,
       isAuthenticated: false,
       status: 'idle',
-      redirect: 0,
     },
     reducers: {
       logoutUser: (state) => {
@@ -50,7 +50,7 @@ const authSlice = createSlice({
           state.user = action.payload.user;
           state.isAuthenticated = true;
         })
-        .addCase(loginUser.rejected, (state) => {
+        .addCase(loginUser.rejected, (state, action) => {
           state.status = 'failed';
           state.isAuthenticated = false;
         });
@@ -61,7 +61,7 @@ const authSlice = createSlice({
         .addCase(registerUser.fulfilled, (state, action) => {
             state.status = 'succeeded';
         })
-        .addCase(registerUser.rejected, (state) => {
+        .addCase(registerUser.rejected, (state, action) => {
             state.status = 'failed';
         })
         builder

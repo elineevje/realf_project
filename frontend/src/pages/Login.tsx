@@ -8,19 +8,29 @@ import { useHistory } from "react-router-dom";
 const Login = (props: { setName: (name: string) => void }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const history = useHistory();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
+  const user: any = useSelector((state: RootState) => state.auth.user);
+
+  const history = useHistory();
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
-    history.push("/");
+    await dispatch(loginUser({ email, password })).then((x) => {
+      if (x.meta.requestStatus === "fulfilled") {
+        setErrorMessage("");
+        history.push("/");
+      } else {
+        setErrorMessage("Invalid email or password. Please try again.");
+      }
+    });
   };
 
   return (
     <form onSubmit={submit}>
       <h1 className="h3 mb-3 fw-normal">Please log in</h1>
+
       <input
         type="email"
         className="form-control"
@@ -40,6 +50,11 @@ const Login = (props: { setName: (name: string) => void }) => {
       <button className="w-100 btn btn-lg btn-primary" type="submit">
         Sign in
       </button>
+      {errorMessage && (
+        <p style={{ paddingTop: "30px", color: "red", whiteSpace: "nowrap" }}>
+          {errorMessage}
+        </p>
+      )}
     </form>
   );
 };

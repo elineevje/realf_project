@@ -8,15 +8,22 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    await dispatch(registerUser({ name, email, password }));
-    await dispatch(loginUser({ email, password }));
-    history.push("/");
+    await dispatch(registerUser({ name, email, password })).then((x) => {
+      if (x.meta.requestStatus === "fulfilled") {
+        setErrorMessage("");
+        dispatch(loginUser({ email, password }));
+        history.push("/");
+      } else {
+        setErrorMessage("Email already in use. Please use a new one.");
+      }
+    });
   };
 
   return (
@@ -49,6 +56,11 @@ const Register = () => {
       <button className="w-100 btn btn-lg btn-primary" type="submit">
         Submit
       </button>
+      {errorMessage && (
+        <p style={{ paddingTop: "30px", color: "red", whiteSpace: "nowrap" }}>
+          {errorMessage}
+        </p>
+      )}
     </form>
   );
 };

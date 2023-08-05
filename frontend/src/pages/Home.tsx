@@ -13,7 +13,6 @@ const Home = (props: { name: string }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log("hallo");
       setName(user.name);
     }
   }, [isAuthenticated]);
